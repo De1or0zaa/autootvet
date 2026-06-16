@@ -2,6 +2,10 @@ import random
 import discord
 
 
+def is_url(text):
+    return text.startswith("http://") or text.startswith("https://")
+
+
 def setup_handlers(client, config, logger):
     @client.event
     async def on_message(message):
@@ -36,7 +40,14 @@ def setup_handlers(client, config, logger):
                     continue
 
                 response = random.choice(rule["responses"])
-                await message.channel.send(response)
+
+                if is_url(response):
+                    embed = discord.Embed()
+                    embed.set_image(url=response)
+                    await message.channel.send(embed=embed)
+                else:
+                    await message.channel.send(response)
+
                 logger.info(f"Ответ отправлен | Сервер: {message.guild.name} | Канал: {message.channel.name} | От: {message.author} | Ответ: {response}")
                 break
         except Exception as e:
