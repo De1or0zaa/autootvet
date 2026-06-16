@@ -11,9 +11,22 @@ from handlers import setup_handlers
 async def main():
     logger = setup_logger()
     
-    config_env = os.getenv('CONFIG_JSON')
-    if config_env:
-        config = json.loads(config_env)
+    token = os.getenv('TOKEN')
+    if token:
+        logger.info(f"Token loaded: {token[:10]}...")
+        config = {
+            "token": token,
+            "rules": [
+                {
+                    "guild_id": int(os.getenv('GUILD_ID', '0')),
+                    "channel_id": int(os.getenv('CHANNEL_ID', '0')),
+                    "user_ids": json.loads(os.getenv('USER_IDS', '[]')),
+                    "trigger_on_mention": os.getenv('TRIGGER_ON_MENTION', 'true').lower() == 'true',
+                    "trigger_on_reply": os.getenv('TRIGGER_ON_REPLY', 'true').lower() == 'true',
+                    "responses": json.loads(os.getenv('RESPONSES', '["Автоответ"]'))
+                }
+            ]
+        }
     else:
         config = load_config()
     
